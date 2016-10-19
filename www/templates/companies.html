@@ -1,7 +1,7 @@
 <ion-view view-title="{{companyText}}">
 
 	<ion-nav-bar class="bar-stable nav-title-slide-ios7">
-	
+
 		<ion-nav-buttons side="left">
 			<button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
 		</ion-nav-buttons>
@@ -23,16 +23,25 @@
 	<ion-header-bar class="bar-light bar-subheader">
 	
 		<input type="text" class="input__search" placeholder="Buscar empresa..." data-ng-model="companySearch">
-	
+
 		<button 
 			ng-if="!!companySearch"
-			class="button button-icon ion-android-close input-button"
-			ng-click="clearSearch()">
+			class="button button-icon ion-search input-button"
+			ng-click="search()">
 		</button>
 
 	</ion-header-bar>
 
 	<ion-content>
+
+		<div class="card" ng-if="!!isSearchResult">
+			<div class="item item-text-wrap">
+				La búsqueda se realiza sobre todos los datos, independientemente de si estás viendo "Potenciales", "En seguimiento" o "Todas".
+			</div>
+			<div class="item item-text-wrap">
+				Para volver a ver la búsqueda del menú, pulsa "Refrescar"
+			</div>			
+		</div>		
 
 		<ion-list show-delete="false" can-swipe="true">
 			<ion-item 
@@ -59,7 +68,7 @@
           </ion-option-button>
 
 			</ion-item>
-			<ion-infinite-scroll icon="ion-loading-c" ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" distance="10%"></ion-infinite-scroll>
+			<ion-infinite-scroll icon="ion-loading-c" ng-if="(!noMoreItemsAvailable && !isSearchResult)" on-infinite="loadMore()" distance="10%"></ion-infinite-scroll>
 		</ion-list>
 	</ion-content>
 </ion-view>

@@ -2,7 +2,7 @@ app
 .controller('ListCtrl', function($scope, $ionicLoading, $state, CompanyService, $timeout, $filter, $localStorage) {
 	
 	$scope.paginationItems = 30;
-
+	$scope.firstLoadDone = false;
 	// $scope.loadMore = function() {
 	// 	if (( Object.keys($scope.items).length != 0) && ($scope.finishedFirstLoad)) {
 	// 		var index = 0;
@@ -36,6 +36,60 @@ app
 		
 	// };
 
+	$scope.search = function(){
+
+		if ( !!$scope.companySearch ){
+			
+			$scope.isSearchResult = true;
+
+			$ionicLoading.show({template: 'Cargando...'});
+			$localStorage.companies.search = [];
+
+			companyRef = firebase.database().ref('dev/kompassList')
+				.once('value', function(data) {
+					
+					var searchText = $scope.companySearch.toLowerCase(),
+						result = [];
+
+					data.forEach(function(snapshot) {
+						if( snapshot.val().name.toLowerCase().indexOf(searchText) >= 0 ){
+							var comp = {};
+							comp = snapshot.val();
+							comp.uid = snapshot.key;
+							comp.showName = comp.name + (!!comp.following ? ' (*)' : '');
+							result.push(comp);
+							// $localStorage.companies['search'].push(comp);
+						}
+					});	
+
+					$timeout(function(){
+						$scope.companies = $filter('orderBy')(result, 'distance');
+					},0);
+
+					$ionicLoading.hide();
+
+			}, function (error) {
+				$ionicLoading.hide();
+				console.log('Error: ' + error.code);
+				alert(JSON.stringify(error));
+			});	
+		}
+
+	};
+
+	$scope.loadMore = function(){
+		console.log('loadmore!!!');
+		if ( !!$scope.firstLoadDone ){
+			$scope.lastElement = $scope.lastElement + $scope.paginationItems;
+			$scope.refresh();
+			$scope.noMoreItemsAvailable = false;
+			setTimeout(function(){
+				$scope.$broadcast('scroll.infiniteScrollComplete');
+			}, 300);
+		}
+
+	};
+
 	$scope.setFollowing = function(item){
 		CompanyService.setFollowing(item.uid, !item.following, function(){
 			console.log('Cambiado');
@@ -43,34 +97,34 @@ app
 		});
 	};
 
-	var updateList = function(companyList, allList){
-		var index = 0;
-		$scope.items = [];
-		if ( !!companyList.val() ){
-			$scope.maxItems = Object.keys(companyList.val()).length;
-		    companyList.forEach(function(snapshot) {
-		        console.log(snapshot.key + ' - ' + snapshot.val().name + ' - ' + snapshot.val().distance);
-				index++;
-				if (( index <= $scope.paginationItems) || allList) {
-					var comp = {};
-					comp = snapshot.val();
-					comp.uid = snapshot.key;
-					comp.showName = comp.name + (!!comp.following ? ' (*)' : '');
-					$scope.companies.push(comp);
-					$scope.lastItemLoaded  = index;
-					$scope.$broadcast('scroll.infiniteScrollComplete');
-				}
-				$scope.items.push(snapshot.val());
-		    });
+	// var updateList = function(companyList, allList){
+	// 	var index = 0;
+	// 	$scope.items = [];
+	// 	if ( !!companyList.val() ){
+	// 		$scope.maxItems = Object.keys(companyList.val()).length;
+	// 	    companyList.forEach(function(snapshot) {
+	// 	        console.log(snapshot.key + ' - ' + snapshot.val().name + ' - ' + snapshot.val().distance);
+	// 			index++;
+	// 			if (( index <= $scope.paginationItems) || allList) {
+	// 				var comp = {};
+	// 				comp = snapshot.val();
+	// 				comp.uid = snapshot.key;
+	// 				comp.showName = comp.name + (!!comp.following ? ' (*)' : '');
+	// 				$scope.companies.push(comp);
+	// 				$scope.lastItemLoaded  = index;
+	// 				$scope.$broadcast('scroll.infiniteScrollComplete');
+	// 			}
+	// 			$scope.items.push(snapshot.val());
+	// 	    });
 
-			$timeout(function(){
-				$scope.companies = $filter('orderBy')($scope.companies, 'distance');
-			}, 0);
+	// 		$timeout(function(){
+	// 			$scope.companies = $filter('orderBy')($scope.companies, 'distance');
+	// 		}, 0);
 
-		}
-		$scope.finishedFirstLoad = true;
-		$ionicLoading.hide();		    
-	};
+	// 	}
+	// 	$scope.finishedFirstLoad = true;
+	// 	$ionicLoading.hide();
+	// };
 
 	var saveData = function(companyList){
 
@@ -87,7 +141,11 @@ app
 			$localStorage.lastItemLoaded = $localStorage.lastItemLoaded + 1;
 		});
 
-		$scope.companies = $filter('orderBy')(compTmp, 'distance');
+		$timeout(function(){
+			$scope.companies = $filter('orderBy')(compTmp, 'distance');
+			$scope.firstLoadDone = true;
+		},0);
+		
 	};
 
 	$scope.delete = function(){
@@ -101,6 +159,9 @@ app
 
 		$localStorage.lastItemLoaded = 0;
 		$scope.lastItemLoaded = 0;
+		
+		$scope.isSearchResult = false;
+		$scope.companySearch = '';
 
 		$ionicLoading.show({template: 'Cargando...'});
 
@@ -117,13 +178,13 @@ app
 					.once('value', function(data) {
 
 						saveData(data);
-						$scope.companyText = 'Listado ( ' + $scope.lastItemLoaded + ' de ' + $scope.maxItems + ' )';
-
+						$scope.companyText = 'Listado ( ' + $scope.lastElement + ' )';
+						$ionicLoading.hide();
 				}, function (error) {
 					$ionicLoading.hide();
 					$scope.companies = [];
 					console.log('Error: ' + error.code);
-					alert('Se produjo  un error. avísame xD');
+					alert(JSON.stringify(error));
 				});			
 				break;			
 			case ('following'):
@@ -138,9 +199,9 @@ app
 				}
 				companyRef.once('value', function(data) {
 					if ( $state.params.type === 'prospects'){
-						$scope.companyText = 'Empresas sin web ( ' + $scope.lastItemLoaded + ' de ' + $scope.maxItems + ' )';
+						$scope.companyText = 'Empresas sin web ( ' + $scope.lastElement + ' )';
 					}else{
-						$scope.companyText = 'En seguimiento ( ' + $scope.maxItems + ' )';
+						$scope.companyText = 'En seguimiento ( ' + $scope.lastElement + ' )';
 					}
 					saveData(data);
 					$ionicLoading.hide();
@@ -148,7 +209,7 @@ app
 					$ionicLoading.hide();
 					$scope.companies = [];
 				   console.log('Error: ' + error.code);
-				   alert('Se produjo  un error. avísame xD');
+				   alert(JSON.stringify(error));
 				});
 				break;
 		}
@@ -158,7 +219,12 @@ app
     	if ( !$localStorage.companies) $localStorage.companies = {};
     	if ( !$localStorage.lastItemLoaded) $localStorage.lastItemLoaded = {};
 
-		$scope.companies = $localStorage.companies[$state.params.type] || [];
+		$scope.companies = $filter('orderBy')($localStorage.companies[$state.params.type], 'distance') || [];
+		
+		$timeout(function(){
+			$scope.firstLoadDone = true;
+		}, 1000 );
+
 		$scope.lastItemLoaded  = $localStorage.lastItemLoaded[$state.params.type] || 0;
 		$scope.firstElem = $scope.lastItemLoaded;
 		$scope.lastElement = $scope.lastItemLoaded + $scope.paginationItems;
