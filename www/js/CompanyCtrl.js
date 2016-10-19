@@ -128,7 +128,7 @@ app
 		var position = {
 			'lat' : lat,
 			'lng' : lng
-		}
+		};
 		$scope.map = MapService.createMap(position, 'map');
 		$timeout(function(){
 			MapService.createMarker(position, $scope.map, name, $scope );

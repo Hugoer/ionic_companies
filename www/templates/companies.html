@@ -1,16 +1,23 @@
 <ion-view view-title="{{companyText}}">
 
 	<ion-nav-bar class="bar-stable nav-title-slide-ios7">
-	    <ion-nav-buttons side="left">
+	
+		<ion-nav-buttons side="left">
+			<button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+		</ion-nav-buttons>
+
+	    <ion-nav-buttons side="secondary">
 	        <button class="button " ng-click="delete()" >
 	        	Borrar todo
 	        </button>
 	    </ion-nav-buttons>
+
 	    <ion-nav-buttons side="right">
 	        <button class="button " ng-click="refresh()" >
 	        	Refrescar
 	        </button>
 	    </ion-nav-buttons>
+
 	</ion-nav-bar>
 
 	<ion-header-bar class="bar-light bar-subheader">

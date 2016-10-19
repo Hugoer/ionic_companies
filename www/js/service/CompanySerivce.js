@@ -13,11 +13,11 @@ var companyServiceFn = ['$ionicLoading',
                 failure(err);
             });
 
-        }
+        };
 
         var showNotes = function(companyList, callback){
             var noteListTmp = [];
-            for (comp in companyList.notes) {
+            for (var comp in companyList.notes) {
                 objNotes = {
                     'uid' : comp,
                     'value' : companyList.notes[comp],

@@ -20,7 +20,7 @@ app
 		}).catch(function(err){
 			console.log(err);
 			$scope.noteText = '';
-		})
+		});
 	};
 
 	$scope.hideNote = function(companyUid, note){

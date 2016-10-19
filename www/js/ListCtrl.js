@@ -40,7 +40,7 @@ app
 		CompanyService.setFollowing(item.uid, !item.following, function(){
 			console.log('Cambiado');
 			$state.reload();
-		})
+		});
 	};
 
 	var updateList = function(companyList, allList){
@@ -70,7 +70,7 @@ app
 		}
 		$scope.finishedFirstLoad = true;
 		$ionicLoading.hide();		    
-	}
+	};
 
 	var saveData = function(companyList){
 

@@ -30,7 +30,7 @@ app
 		companyRef.once('value', function(data) {
 			var list = [];
 			
-			for (company in data.val()) {
+			for (var company in data.val()) {
 				list.push({
 					'key' : company,
 					'value' : data.val()[company]
