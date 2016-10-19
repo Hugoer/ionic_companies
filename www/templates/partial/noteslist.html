@@ -1,0 +1,21 @@
+<div class="card">
+	<div class="item item-divider item-icon-right item-button-right">
+    <!-- <button class="button button-positive">
+      <i class="icon ion-ios-telephone"></i>
+    </button> -->
+    	<a ui-sref="app.notes({uid : company.uid})"><i class="icon ion-plus-circled positive"></i></a>
+		Anotaciones
+	</div>
+	<div class="item item-text-wrap">
+		<ion-list show-delete="false"  ng-repeat="note in noteList">
+			<ion-item ng-class="{'none' : !!note.value.hidden}"  class="item item-icon-right item-button-right " can-swipe="true">
+				<h2>{{note.value.text}}</h2>
+				<p>{{note.value.date}}</p>
+				<i ng-click="hideNote(company.uid, note.uid)" class="icon ion-minus-circled assertive"></i>
+			</ion-item>
+		</ion-list>
+	</div>
+	<div class="item item-divider">
+		Anotaciones
+	</div>
+</div>

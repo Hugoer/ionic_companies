@@ -1,0 +1,28 @@
+<ion-view view-title="Anotaciones">
+
+	<ion-nav-bar class="bar-stable nav-title-slide-ios7">
+	    <ion-nav-back-button class="button-icon icon icon-left ion-chevron-left button-clear button-dark">
+	        Volver
+	    </ion-nav-back-button>
+	</ion-nav-bar>
+
+	<ion-content>
+		<div ng-include="'templates/partial/noteslist.html'" scope="" onload=""></div>
+	</ion-content>
+
+	<ion-footer-bar align-title="left" >
+		<div class="bar bar-header item-input-inset">
+			
+			<label class="item-input-wrapper">
+				<i class="icon ion-ios-compose-outline placeholder-icon"></i>
+				<input type="text" ng-model="noteText" placeholder="Escribe una anotación...">
+			</label>
+
+			<button ng-click="saveNote()" class="button button-positive">
+				Guardar
+			</button>
+
+		</div>
+	</ion-footer-bar>
+
+</ion-view>

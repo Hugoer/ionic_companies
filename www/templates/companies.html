@@ -1,0 +1,58 @@
+<ion-view view-title="{{companyText}}">
+
+	<ion-nav-bar class="bar-stable nav-title-slide-ios7">
+	    <ion-nav-buttons side="left">
+	        <button class="button " ng-click="delete()" >
+	        	Borrar todo
+	        </button>
+	    </ion-nav-buttons>
+	    <ion-nav-buttons side="right">
+	        <button class="button " ng-click="refresh()" >
+	        	Refrescar
+	        </button>
+	    </ion-nav-buttons>
+	</ion-nav-bar>
+
+	<ion-header-bar class="bar-light bar-subheader">
+	
+		<input type="text" class="input__search" placeholder="Buscar empresa..." data-ng-model="companySearch">
+	
+		<button 
+			ng-if="!!companySearch"
+			class="button button-icon ion-android-close input-button"
+			ng-click="clearSearch()">
+		</button>
+
+	</ion-header-bar>
+
+	<ion-content>
+
+		<ion-list show-delete="false" can-swipe="true">
+			<ion-item 
+				class="item item-icon-right item-button-right " 
+				ng-repeat="company in companies" 
+				href="#/app/company/{{company.uid}}">
+				<h2 class="strong">{{company.showName}}</h2>
+				<p><span class="strong">Distancia: </span> {{company.distance}}</p>
+				<i class="icon ion-chevron-right"></i>
+
+          <ion-option-button ng-class="{'none' : !!company.following }" class="button-positive"
+                             ng-click="setFollowing(company)">
+            Seguir
+          </ion-option-button>
+          
+          <ion-option-button ng-class="{'none' : !company.following }" class="button-assertive"
+                             ng-click="setFollowing(company)">
+            Dejar de seguir
+          </ion-option-button>
+
+          <ion-option-button class="button-calm" ui-sref="app.notes({uid : company.uid})"
+                             ng-click="share()">
+            	<i class="icon ion-compose"></i>
+          </ion-option-button>
+
+			</ion-item>
+			<ion-infinite-scroll icon="ion-loading-c" ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" distance="10%"></ion-infinite-scroll>
+		</ion-list>
+	</ion-content>
+</ion-view>

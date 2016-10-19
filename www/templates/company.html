@@ -1,0 +1,63 @@
+<ion-view view-title="{{company.name}}">
+
+	<ion-nav-bar class="bar-stable nav-title-slide-ios7">
+	    <ion-nav-back-button class="button-icon icon icon-left ion-chevron-left button-clear button-dark">
+	        Volver
+	    </ion-nav-back-button>
+	    <ion-nav-buttons side="right">
+	        <button class="button " ng-class="{'button-positive' : !company.following, 'button-assertive' : !!company.following }"  ng-click="follow()" >
+	        	{{followText}}
+	        </button>
+	    </ion-nav-buttons>
+	</ion-nav-bar>
+	
+	<ion-content>
+
+		<ion-list class="card">
+			
+			<ion-item>
+				<h1>{{company.name}}</h1>
+			</ion-item>
+			
+			<ion-item class="item-body">
+				<h2>
+					{{company.description}}
+				</h2>
+				<h2>
+					{{company.numberEmployees}}
+				</h2>
+			</ion-item>
+
+			<ion-item class="item-icon-left">
+				<i class="icon ion-location"></i>
+				( {{company.postalCode}} ) {{company.streetAddress}}
+			</ion-item>
+			<ion-item class="item-icon-left">
+				<i class="icon ion-map"></i>
+				{{company.distance}} metros.
+			</ion-item>			
+
+			<ion-item class="item-icon-left" ng-show="!!company.web">
+				<i class="icon ion-at"></i>
+				<a ng-click="openInAppBrowser(company.web)">{{company.web}}</a>
+				<!-- <a ng-click="openInExternalBrowser(company.web)">{{company.web}}</a> -->
+			</ion-item>			
+
+			<ion-item>
+				<div ng-include="'templates/partial/noteslist.html'" scope="" onload=""></div>				
+			</ion-item>
+
+			<ion-item>
+				<div id="map" data-tap-disabled="true"></div>
+			</ion-item>
+
+			<ion-item>
+				<!-- <a href="geo://0,0?q=Vigo" data-rel="external">Abrir en Google Maps</a> -->
+				<!-- <a href="" ng-click="openInExternalBrowser('geo://0,0?q={{company.streetAddressFormated}}')">Abrir en Google Maps</a> -->
+				<a href="" ng-click="openGeo()">Abrir en Google Maps</a>
+			</ion-item>
+			
+
+		</ion-list>
+	</ion-content>
+</ion-view>
