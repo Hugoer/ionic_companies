@@ -1,8 +1,28 @@
 <ion-view view-title="Mapa">
+
+	<ion-nav-bar class="bar-stable nav-title-slide-ios7">
+
+		<ion-nav-buttons side="left">
+			<button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+		</ion-nav-buttons>
+
+	    <ion-nav-buttons side="right" >
+	        <button class="button " ng-click="doScroll(false)" ng-hide="fixedMap">
+	        	Fijar mapa
+	        </button>
+	    </ion-nav-buttons>
+
+	</ion-nav-bar>
+
 	<ion-content>
-		<ion-list class="card">
+		<ion-list class="card item-stable" class="" >
 			
-			<ion-item>
+			<ion-item class=" item-icon-right" ng-click="tooggleShown()">
+				<span>Filtros</span>
+				<i class="icon " ng-class="{'ion-chevron-down' : !isGroupShown, 'ion-chevron-up' : isGroupShown }"></i>
+			</ion-item>
+
+			<ion-item ng-show="isGroupShown" >
 				<label><span class="strong">Distancia:</span> {{filters.range}} (metros)</label>
 				<div class="item range item--nobordertop">
 					<i class="icon ion-ios-location-outline"></i>
@@ -18,35 +38,36 @@
 				</div>
 			</ion-item>
 			
-			<ion-item class="item-icon-left">
+			<ion-item  class=" item-icon-left"  ng-show="isGroupShown">
 				<i class="icon ion-ios-eye"></i>
 				<ion-toggle class="item--nobordertop" ng-model="filters.following" ng-change="changeFilters()" >En seguimiento</ion-toggle>				
 			</ion-item>
 			
-			<ion-item class="item-icon-left">
+			<ion-item  class=" item-icon-left"  ng-show="isGroupShown">
 				<i class="icon ion-at"></i>
 				<ion-toggle class="item--nobordertop" ng-model="filters.prospects" ng-change="changeFilters()" >Sin web</ion-toggle>				
 			</ion-item>
 
-			<ion-item class="item-icon-left">
+			<ion-item  class=" item-icon-left"  ng-show="isGroupShown">
 				<i class="icon ion-ionic"></i>
 				<ion-toggle class="item--nobordertop" ng-model="circleVisible" ng-change="showCircle()" >Mostrar círculo</ion-toggle>
 			</ion-item>
 			
-			<ion-item class="item-icon-left">				
+			<ion-item  class=" item-icon-left" ng-show="isGroupShown">
 				<i class="icon ion-bag"></i>
 				<h2 class="title">Número de empresas: {{markersCount}}</h2>
 				<!-- <a ng-class="{'none' : (markersCount == 0)}" ng-click="showMarkers()" class="button icon-left ion-android-locate button-clear button-dark">Mostrar empresas</a> -->
 			</ion-item>
 			
-			<ion-item >
-				<ion-toggle class="item--nobordertop" ng-disabled="(markersCount === 0)" ng-model="markerVisible" ng-change="showMarkers(true)" >Mostrar empresas</ion-toggle>
+			<ion-item  class=""  ng-show="isGroupShown">
+				<ion-toggle class="item--nobordertop" ng-disabled="(markersCount === 0)" ng-model="markerVisible" ng-change="showMarkers()" >Mostrar empresas</ion-toggle>
 			</ion-item>			
-
+			
 			<ion-item>
-				<div id="fullmap" data-tap-disabled="true"></div>
+				<div id="fullmap" ng-dblclick="doScroll(true)"></div>
 			</ion-item>
 
 		</ion-list>
+
 	</ion-content>
 </ion-view>

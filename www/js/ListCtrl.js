@@ -219,15 +219,17 @@ app
     	if ( !$localStorage.companies) $localStorage.companies = {};
     	if ( !$localStorage.lastItemLoaded) $localStorage.lastItemLoaded = {};
 
-		$scope.companies = $filter('orderBy')($localStorage.companies[$state.params.type], 'distance') || [];
+    	if ( !$scope.companies || $scope.companies.length === 0){
+    		$scope.companies = $filter('orderBy')($localStorage.companies[$state.params.type], 'distance') || [];
+			$scope.lastItemLoaded  = $localStorage.lastItemLoaded[$state.params.type] || 0;
+			$scope.firstElem = $scope.lastItemLoaded;
+			$scope.lastElement = $scope.lastItemLoaded + $scope.paginationItems;    		
+    	}
 		
 		$timeout(function(){
 			$scope.firstLoadDone = true;
 		}, 1000 );
 
-		$scope.lastItemLoaded  = $localStorage.lastItemLoaded[$state.params.type] || 0;
-		$scope.firstElem = $scope.lastItemLoaded;
-		$scope.lastElement = $scope.lastItemLoaded + $scope.paginationItems;
     });
     
     /*$scope.$on( "$ionicView.beforeLeave", function( scopes, states ) {

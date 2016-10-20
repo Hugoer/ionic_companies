@@ -3,13 +3,26 @@ var mapsServiceFn = ['$ionicLoading','$compile', '$templateRequest',
 
         var createMap = function(position, idMap){
             var myLatlng = new google.maps.LatLng(position.lat,position.lng);
+            
             var mapOptions = {
-                center: myLatlng,
-                zoom: 16,
-                mapTypeId: google.maps.MapTypeId.ROADMAP
+                draggable              : false,
+                scrollwheel            : false,
+                panControl             : false,
+                disableDoubleClickZoom : true,
+                center                 : myLatlng,
+                zoom                   : 16,
+                mapTypeId              : google.maps.MapTypeId.ROADMAP
             };
             var map = new google.maps.Map(document.getElementById(idMap),mapOptions);
             return map;
+        };
+
+        var setScrollMap = function(map, scroll){
+            map.setOptions({
+                draggable   : scroll,
+                panControl  : scroll,
+                scrollwheel : scroll
+            });
         };
 
         var createMarker = function(position, myMap, title, scope){
@@ -55,8 +68,10 @@ var mapsServiceFn = ['$ionicLoading','$compile', '$templateRequest',
         };
 
         var clearMarkers = function( markerArray ){
-            for (var i = 0; i < markerArray.length; i++) {
-                markerArray[i].setMap(null);
+            if ( !!markerArray ){
+                for (var i = 0; i < markerArray.length; i++) {
+                    markerArray[i].setMap(null);
+                }
             }
         };
 
@@ -87,7 +102,8 @@ var mapsServiceFn = ['$ionicLoading','$compile', '$templateRequest',
             createMap         : createMap,
             createMarker      : createMarker,
             createArrayMarker : createArrayMarker,
-            openGeo : openGeo
+            openGeo : openGeo,
+            setScrollMap : setScrollMap
 
         };
     }

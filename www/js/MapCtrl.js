@@ -13,6 +13,9 @@ app
 	$scope.circleVisible = true;
 	$scope.markerVisible = false;
 
+	$scope.fixedMap = true;
+	$scope.isGroupShown = true;
+
 	$scope.markerList = [];
 
 	var initialize = function(position, name){
@@ -63,7 +66,7 @@ app
 		$scope.circleVisible = !$scope.circleVisible;
 	};
 
-	$scope.showMarkers = function(toggleValue){
+	$scope.showMarkers = function(){
 		if ( !!$scope.markerVisible ){
 			if ( !!$scope.markerArray && $scope.markerArray.length > 0 ){
 				MapService.clearMarkers($scope.markerArray);
@@ -74,15 +77,24 @@ app
 		$scope.markerVisible = !$scope.markerVisible;
 	};
 
+	$scope.doScroll = function(newValue){
+		$scope.fixedMap = !newValue;
+		MapService.setScrollMap($scope.map, newValue);
+	};
+
+	$scope.tooggleShown = function(){
+		$scope.isGroupShown = !$scope.isGroupShown;
+	};
+
 	$scope.changeFilters = function( modifyCircle ){
 
 		if ( !!modifyCircle ){
-			//Esto se hace porque si modificamos el radio, tenemos que dejar de ver los markers y volverlos a pedir.
-			if ( !!$scope.markerVisible ){
-				if ( !!$scope.markerArray && $scope.markerArray.length > 0 ){
-					MapService.clearMarkers($scope.markerArray);
-				}
-			}			
+			
+			MapService.clearMarkers($scope.markerArray);
+			// $timeout(function(){
+			// 	$scope.markerVisible = false;
+			// },200);
+
 			if ( !!$scope.circle ){
 				$scope.circle.setMap(null);
 			}
@@ -91,9 +103,6 @@ app
 				$scope.circle = MapService.createCircle($scope.position, $scope.map, parseInt($scope.filters.range) );	
 			}
 
-			if ( !!$scope.markerArray && $scope.markerArray.length > 0 ){
-				MapService.clearMarkers($scope.markerArray);
-			}
 		}
 
 		$scope.markerList = [];

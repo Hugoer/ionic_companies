@@ -24,12 +24,14 @@ app
 	$scope.follow = function(){
 		var newValue = !$scope.company.following;
 		CompanyService.setFollowing($state.params.uid,newValue, function(){
-			$scope.company.following = newValue;
-			if( $scope.company.following === true ) {
-				$scope.followText = 'Dejar de seguir';	
-			}else{
-				$scope.followText = 'Seguir';
-			}
+			$timeout(function(){
+				$scope.company.following = newValue;
+				if( $scope.company.following === true ) {
+					$scope.followText = 'Dejar de seguir';	
+				}else{
+					$scope.followText = 'Seguir';
+				}
+			},0);
 		});
 	};
 
