@@ -149,10 +149,10 @@ app
 	};
 
 	$scope.delete = function(){
+		$scope.companies = [];
 		$localStorage.companies[$state.params.type] = undefined;
 		$localStorage.lastItemLoaded = undefined;
-		$localStorage.dataMapLoaded  = undefined;
-		$state.reload();
+		// $state.reload();
 	};
 
 	$scope.refresh = function(){
