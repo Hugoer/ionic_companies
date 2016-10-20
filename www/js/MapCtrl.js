@@ -29,21 +29,27 @@ app
 	$scope.refreshData  = function(){
 		$ionicLoading.show({template: 'Cargando...'});
 
-		var companyRef = firebase.database().ref('dev').child('kompassList');
-		companyRef.once('value', function(data) {
+		var companyRef = firebase.database().ref('dev').child('kompassList').orderByChild('following').equalTo($scope.filters.following);
+		companyRef.on('value', function(data) {
 			var list = [];
 			
 			for (var company in data.val()) {
-				list.push({
-					'key' : company,
-					'value' : data.val()[company]
-				});
+				//Si sólo queremos los que tengan web, o no ( dependiendo del check
+				if ( !!$scope.filters.prospects === !data.val()[company].web ){
+					if ( data.val()[company].distance <= $scope.filters.range ){
+						list.push({
+							'key' : company,
+							'value' : data.val()[company]
+						});
+					}
+				}
 			}
 
-			$localStorage.dataMapLoaded = list;
+			$scope.markerList = list;
+			$scope.markersCount = list.length;
 			$ionicLoading.hide();
 		}, function(err){
-			$localStorage.dataMapLoaded = [];
+			$scope.markerList = [];
 			$ionicLoading.hide();
 		});
 	};
@@ -87,13 +93,12 @@ app
 	};
 
 	$scope.changeFilters = function( modifyCircle ){
+		
+		$scope.refreshData();
 
 		if ( !!modifyCircle ){
 			
 			MapService.clearMarkers($scope.markerArray);
-			// $timeout(function(){
-			// 	$scope.markerVisible = false;
-			// },200);
 
 			if ( !!$scope.circle ){
 				$scope.circle.setMap(null);
@@ -105,25 +110,10 @@ app
 
 		}
 
-		$scope.markerList = [];
-		if ( !!$localStorage.dataMapLoaded ){
-			for (var i = 0; i < $localStorage.dataMapLoaded.length; i++) {
-				if ( !!$localStorage.dataMapLoaded[i].value.following === $scope.filters.following ){
-					if ( !!!$localStorage.dataMapLoaded[i].value.web ===  $scope.filters.prospects ){
-						if ( $localStorage.dataMapLoaded[i].value.distance <= parseInt($scope.filters.range) ){
-							$scope.markerList.push($localStorage.dataMapLoaded[i]);
-						}
-					}
-				}
-			}
-		}
-		$scope.markersCount = $scope.markerList.length;
 	};
 
     $scope.$on( "$ionicView.beforeEnter", function( scopes, states ) {
-		if (( !$localStorage.dataMapLoaded ) || (!!$localStorage.dataMapLoaded && $localStorage.dataMapLoaded.length === 0)) {
-			$scope.refreshData();
-		}
+		$scope.refreshData();
     });
 
 	$scope.$on( "$ionicView.enter", function( scopes, states ) {
