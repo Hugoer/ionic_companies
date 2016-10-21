@@ -2,39 +2,6 @@ app
 .controller('ListCtrl', function($scope, $ionicLoading, $state, CompanyService, $timeout, $filter, $localStorage) {
 	
 	$scope.paginationItems = 30;
-	$scope.firstLoadDone = false;
-	// $scope.loadMore = function() {
-	// 	if (( Object.keys($scope.items).length != 0) && ($scope.finishedFirstLoad)) {
-	// 		var index = 0;
-	// 		$ionicLoading.show({template: 'Cargando...'});
-	// 		for (company in $scope.items) {
-	// 			index++;
-	// 			if (( index > $scope.lastItemLoaded ) && ( index <= $scope.lastItemLoaded + $scope.paginationItems )){
-	// 				var comp = {};
-	// 				comp = $scope.items[company];
-	// 				comp.uid = company;
-	// 				comp.showName = comp.name + (!!comp.following ? ' (*)' : '');
-	// 				$scope.companies.push(comp);
-					
-	// 			}
-	// 		}
-
-	// 		$timeout(function(){
-	// 			$scope.companies = $filter('orderBy')($scope.companies, 'distance');
-	// 		}, 0);
-
-	// 		$scope.lastItemLoaded  = $scope.lastItemLoaded + $scope.paginationItems;
-	// 		$scope.noMoreItemsAvailable = !($scope.maxItems > $scope.lastItemLoaded);
-	// 		if ( $state.params.type === 'prospects'){
-	// 			$scope.companyText = 'Empresas sin web ( ' + $scope.lastItemLoaded + ' de ' + $scope.maxItems + ' )';
-	// 		}else{
-	// 			$scope.companyText = 'Listado ( ' + $scope.lastItemLoaded + ' de ' + $scope.maxItems + ' )';
-	// 		}
-	// 		$ionicLoading.hide();
-	// 		$scope.$broadcast('scroll.infiniteScrollComplete');
-	// 	}
-		
-	// };
 
 	$scope.search = function(){
 
@@ -79,15 +46,8 @@ app
 
 	$scope.loadMore = function(){
 		console.log('loadmore!!!');
-		if ( !!$scope.firstLoadDone ){
-			$scope.lastElement = $scope.lastElement + $scope.paginationItems;
-			$scope.refresh();
-			$scope.noMoreItemsAvailable = false;
-			setTimeout(function(){
-				$scope.$broadcast('scroll.infiniteScrollComplete');
-			}, 300);
-		}
-
+		$scope.lastElement = $scope.lastElement + $scope.paginationItems;
+		$scope.refresh();
 	};
 
 	$scope.setFollowing = function(item){
@@ -97,41 +57,21 @@ app
 		});
 	};
 
-	// var updateList = function(companyList, allList){
-	// 	var index = 0;
-	// 	$scope.items = [];
-	// 	if ( !!companyList.val() ){
-	// 		$scope.maxItems = Object.keys(companyList.val()).length;
-	// 	    companyList.forEach(function(snapshot) {
-	// 	        console.log(snapshot.key + ' - ' + snapshot.val().name + ' - ' + snapshot.val().distance);
-	// 			index++;
-	// 			if (( index <= $scope.paginationItems) || allList) {
-	// 				var comp = {};
-	// 				comp = snapshot.val();
-	// 				comp.uid = snapshot.key;
-	// 				comp.showName = comp.name + (!!comp.following ? ' (*)' : '');
-	// 				$scope.companies.push(comp);
-	// 				$scope.lastItemLoaded  = index;
-	// 				$scope.$broadcast('scroll.infiniteScrollComplete');
-	// 			}
-	// 			$scope.items.push(snapshot.val());
-	// 	    });
+	$scope.changeState = function(company){
 
-	// 		$timeout(function(){
-	// 			$scope.companies = $filter('orderBy')($scope.companies, 'distance');
-	// 		}, 0);
+		var params = {
+			'info' : angular.toJson(company)
+		};
+		$state.go('app.company', params);
 
-	// 	}
-	// 	$scope.finishedFirstLoad = true;
-	// 	$ionicLoading.hide();
-	// };
+	};
 
 	var saveData = function(companyList){
 
 		var compTmp = [];
 
 		companyList.forEach(function(snapshot) {
-		    console.log(snapshot.key + ' - ' + snapshot.val().name + ' - ' + snapshot.val().distance);
+		    // console.log(snapshot.key + ' - ' + snapshot.val().name + ' - ' + snapshot.val().distance);
 			var comp = {};
 			comp = snapshot.val();
 			comp.uid = snapshot.key;
@@ -144,6 +84,7 @@ app
 		$timeout(function(){
 			$scope.companies = $filter('orderBy')(compTmp, 'distance');
 			$scope.firstLoadDone = true;
+			_updateTitle();
 		},0);
 		
 	};
@@ -152,8 +93,22 @@ app
 		$scope.companies = [];
 		$localStorage.companies[$state.params.type] = undefined;
 		$localStorage.lastItemLoaded = undefined;
-		// $state.reload();
 	};
+
+	var _updateTitle = function(){
+		var title = '';
+		switch($state.params.type){
+			case ('all'):
+				$scope.companyText = 'Todas ( ' + $scope.lastElement + ' )';
+				break;
+			case ('following'):
+				$scope.companyText = 'Siguiendo ( ' + $scope.lastElement + ' )';
+				break;
+			case ('prospects'):
+				$scope.companyText = 'Sin web ( ' + $scope.lastElement + ' )';
+				break;
+		}
+	}
 
 	$scope.refresh = function(){
 
@@ -178,7 +133,7 @@ app
 					.once('value', function(data) {
 
 						saveData(data);
-						$scope.companyText = 'Listado ( ' + $scope.lastElement + ' )';
+						
 						$ionicLoading.hide();
 				}, function (error) {
 					$ionicLoading.hide();
@@ -198,11 +153,6 @@ app
 						.limitToFirst($scope.lastElement);
 				}
 				companyRef.once('value', function(data) {
-					if ( $state.params.type === 'prospects'){
-						$scope.companyText = 'Empresas sin web ( ' + $scope.lastElement + ' )';
-					}else{
-						$scope.companyText = 'En seguimiento ( ' + $scope.lastElement + ' )';
-					}
 					saveData(data);
 					$ionicLoading.hide();
 				}, function (error) {
@@ -225,10 +175,6 @@ app
 			$scope.firstElem = $scope.lastItemLoaded;
 			$scope.lastElement = $scope.lastItemLoaded + $scope.paginationItems;    		
     	}
-		
-		$timeout(function(){
-			$scope.firstLoadDone = true;
-		}, 1000 );
 
     });
     

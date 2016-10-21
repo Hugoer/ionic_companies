@@ -15,19 +15,32 @@ var companyServiceFn = ['$ionicLoading',
 
         };
 
-        var showNotes = function(companyList, callback){
-            var noteListTmp = [];
-            for (var comp in companyList.notes) {
-                objNotes = {
-                    'uid' : comp,
-                    'value' : companyList.notes[comp],
-                };
-                noteListTmp.push(objNotes);
-            }
-            // $timeout(function(){
-            //     $scope.noteList = noteListTmp;
-            // },0);
-            callback(noteListTmp);
+        var showNotes = function(companyUid, callback){
+            // var noteListTmp = [];
+            // for (var comp in companyList.notes) {
+            //     objNotes = {
+            //         'uid' : comp,
+            //         'value' : companyList.notes[comp],
+            //     };
+            //     noteListTmp.push(objNotes);
+            // }
+            // callback(noteListTmp);
+            var noteListTmp = [],
+                objNotes = {};
+            var result = firebase.database().ref('dev/kompassList/' + companyUid + '/notes/');
+            result.once('value', function(response) {
+                response.forEach(function(item){
+                    objNotes = {
+                        'uid' : item.key,
+                        'value' : item.val(),
+                    };
+                    noteListTmp.push(objNotes);
+                });
+                callback(noteListTmp);                
+            }, function(err){
+                failure(err);
+            });
+
         };
 
         var hideNote = function(companyUid, note, callback, failure){

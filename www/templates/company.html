@@ -5,8 +5,7 @@
 	        Volver
 	    </ion-nav-back-button>
 	    <ion-nav-buttons side="right">
-	        <button class="button " ng-class="{'button-positive' : !company.following, 'button-assertive' : !!company.following }"  ng-click="follow()" >
-	        	{{followText}}
+	        <button class="button icon ion-person-add" ng-class="{'icon--positive' : !company.following, 'icon--assertive' : !!company.following }"  ng-click="follow()" >
 	        </button>
 	    </ion-nav-buttons>
 	</ion-nav-bar>

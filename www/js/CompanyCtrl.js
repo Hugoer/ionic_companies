@@ -1,8 +1,6 @@
 app
 .controller('CompanyCtrl', function($scope, $state, $ionicLoading, MapService, $timeout, CompanyService) {
 
-	$scope.companyUid = $state.params.uid;
-
 	$scope.openInExternalBrowser = function(url){
 	  // Open in external browser
 	  window.open(url,'_system','location=yes'); 
@@ -23,7 +21,7 @@ app
 
 	$scope.follow = function(){
 		var newValue = !$scope.company.following;
-		CompanyService.setFollowing($state.params.uid,newValue, function(){
+		CompanyService.setFollowing($scope.company.uid, newValue, function(){
 			$timeout(function(){
 				$scope.company.following = newValue;
 				if( $scope.company.following === true ) {
@@ -48,7 +46,7 @@ app
 
 	$scope.hideNote = function(companyUid, note){
 		CompanyService.hideNote(companyUid, note,function(){
-			CompanyService.showNotes($scope.company,function(response){
+			CompanyService.showNotes($scope.company.uid,function(response){
 				$timeout(function(){
 	                $scope.noteList = response;
 	            },0);				
@@ -60,73 +58,31 @@ app
 
 		$scope.company = {};
 		$ionicLoading.show({template: 'Cargando...'});
+		$scope.company = angular.fromJson($state.params.info);
+		$scope.company.streetAddressFormated = formatGoogleText($scope.company.streetAddress) + '+' + $scope.company.city;
+		if( $scope.company.following === true ) {
+			$scope.followText = 'Dejar de seguir';	
+		}else{
+			$scope.followText = 'Seguir';
+			$scope.company.following = false;
+		}
 
-		var companyRef = firebase.database().ref('dev/kompassList/' + $state.params.uid);
-		companyRef.once('value', function(data) {
-						
-			$scope.company = data.val();
-			if ( !!$scope.company ){
-				$scope.company.uid = $scope.companyUid;
-				$scope.company.streetAddressFormated = formatGoogleText($scope.company.streetAddress) + '+' + $scope.company.city;
-				if( $scope.company.following === true ) {
-					$scope.followText = 'Dejar de seguir';	
-				}else{
-					$scope.followText = 'Seguir';
-					$scope.company.following = false;
-				}
-				
-				CompanyService.showNotes($scope.company,function(response){
-					$timeout(function(){
-		                $scope.noteList = response;
-		            },0);				
-				});
-			}
+        CompanyService.showNotes($scope.company.uid,function(response){
+            $timeout(function(){
+                $scope.noteList = response;
+            },0);
+        });
 
-			$ionicLoading.hide();
-
-		}, function (error) {
-			$ionicLoading.hide();
-			$scope.companies = [];
-		   console.log('Error: ' + error.code);
-		});
-
+		$ionicLoading.hide();
 	});
 
 	$scope.$on( "$ionicView.enter", function( scopes, states ) {	
 		if (!!$scope.company.position){
 			initialize($scope.company.position.latitud, $scope.company.position.longitud, $scope.company.name);
-		}
+		}		
 	});
 
 	function initialize(lat,lng, name) {
-		// var myLatlng = new google.maps.LatLng(lat,lng);
-		// var mapOptions = {
-		// 	center: myLatlng,
-		// 	zoom: 16,
-		// 	mapTypeId: google.maps.MapTypeId.ROADMAP
-		// };
-		// var map = new google.maps.Map(document.getElementById("map"),
-		// mapOptions);
-
-		// //Marker + infowindow + angularjs compiled ng-click
-		// // var contentString = "<div><a ng-click='clickTest()'>Click me!</a></div>";
-		// // var compiled = $compile(contentString)($scope);
-
-		// // var infowindow = new google.maps.InfoWindow({
-		// // 	content: compiled[0]
-		// // });
-
-		// var marker = new google.maps.Marker({
-		// 	position: myLatlng,
-		// 	map: map,
-		// 	title: 'Uluru (Ayers Rock)'
-		// });
-
-		// // google.maps.event.addListener(marker, 'click', function() {
-		// // 	infowindow.open(map,marker);
-		// // });
-
-		// $scope.map = map;
 		var position = {
 			'lat' : lat,
 			'lng' : lng
@@ -135,8 +91,5 @@ app
 		$timeout(function(){
 			MapService.createMarker(position, $scope.map, name, $scope );
 		},0);
-		
-
 	}
-	// google.maps.event.addDomListener(window, 'load', initialize);
 });

@@ -1,0 +1,37 @@
+<ion-view view-title="Agenda de google">
+	<ion-content>	
+	
+		<button onclick="hasReadPermission()">has read permission</button><br/><br/>
+		<button onclick="requestReadPermission()">req read permission</button><br/><br/>
+		<button onclick="hasWritePermission()">has write permission</button><br/><br/>
+		<button onclick="requestWritePermission()">req write permission</button><br/><br/>
+		<button onclick="hasReadWritePermission()">has readwrite permission</button><br/><br/>
+		<button onclick="requestReadWritePermission()">req readwrite permission</button><br/><br/>
+		<button onclick="openCalendar()">open calendar</button><br/><br/>
+		<button onclick="listCalendars()">list calendars</button><br/><br/>
+		<button onclick="createCalendar()">create calendar</button><br/><br/>
+		<button onclick="deleteCalendar()">delete calendar</button><br/><br/>
+		<button onclick="createCalendarEvent()">create event</button><br/><br/>
+		<button onclick="createCalendarEventWithOptions()">create event with options</button><br/><br/>
+		<button onclick="createCalendarEventInteractively()">create event interactively</button><br/><br/>
+		<button onclick="createCalendarEventInteractivelyWithOptions()">create event interactively with options</button><br/><br/>
+		<button onclick="deleteEvent()">delete event</button><br/><br/>
+		<button onclick="findEventWithFilter()">find event with filter</button><br/><br/>
+		<button onclick="findEventNoFilter()">find event no filter</button><br/><br/>
+		<button onclick="listEventsInRange()">list events in range</button>
+
+		<div class="card" ng-repeat="event in events">
+			<div class="item item-divider">
+				{{event.title}}
+			</div>
+			<div class="item item-text-wrap">
+				<p>{{ event.description }}</p>
+				<strong>When: {{ event.date | date:'short' }}</strong>
+
+				<p ng-if="event.status">This event is added to your calendar already!</p>
+				<button ng-if="!event.status" ng-click="addEvent(event,$index)" class="button button-block button-balanced">Add to Calendar</button>
+
+			</div>
+		</div>
+	</ion-content>
+</ion-view>

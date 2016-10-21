@@ -25,7 +25,7 @@ app
 
 	$scope.hideNote = function(companyUid, note){
 		CompanyService.hideNote(companyUid, note,function(){
-			CompanyService.showNotes($scope.company,function(response){
+			CompanyService.showNotes($scope.company.uid,function(response){
 				$timeout(function(){
 	                $scope.noteList = response;
 	            },0);				
@@ -44,7 +44,7 @@ app
 			$scope.noteList = [];
 			companyList = data.val();
 
-			CompanyService.showNotes(companyList,function(response){
+			CompanyService.showNotes(companyUid,function(response){
 				$timeout(function(){
 	                $scope.noteList = response;
 	            },0);				

@@ -90,7 +90,7 @@ var app = angular.module('starter', [
   })
 
   .state('app.company', {
-    url: '/company/:uid',
+    url: '/company/:info',
     views: {
       'menuContent': {
         templateUrl: 'templates/company.html',
@@ -116,6 +116,16 @@ var app = angular.module('starter', [
       'menuContent': {
         templateUrl: 'templates/map.html',
         controller : 'MapCtrl'
+      }
+    }
+  })
+
+  .state('app.calendar', {
+    url: '/calendar',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/calendar.html',
+        controller : 'CalendarCtrl'
       }
     }
   });

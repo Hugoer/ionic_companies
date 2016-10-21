@@ -65,3 +65,28 @@
   display: block !important;
 }
 /*accordion*/
+
+
+/*ICONS*/
+.icon.icon--balanced:before{
+  color: #33cd5f;
+}
+.icon.icon--positive:before{
+  color: #387ef5;
+}
+.icon.icon--calm:before{
+  color: #11c1f3;
+}
+.icon.icon--energized:before{
+  color: #ffc900;
+}
+.icon.icon--assertive:before{
+  color: #ef473a;
+}
+.icon.icon--royal:before{
+  color: #886aea;
+}
+.icon.icon--dark:before{
+  color: #444444;
+}
+/*ICONS*/
