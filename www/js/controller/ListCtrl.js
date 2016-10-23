@@ -199,6 +199,8 @@ function($scope, $ionicLoading, $state, CompanyService, $timeout, $filter, $loca
 
     		if ( !!$localStorage.companies && !!$localStorage.companies[$state.params.type] && $localStorage.companies[$state.params.type].length !== 0 ){
     			$scope.companies = $filter('orderBy')($localStorage.companies[$state.params.type], 'distance') || [];	
+    		}else{
+    			$scope.companies = [];
     		}
     		
     		if ( !!$localStorage.lastItemLoaded ){

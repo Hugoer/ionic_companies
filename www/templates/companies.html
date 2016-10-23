@@ -54,6 +54,10 @@
 					Dejar de seguir
 					</ion-option-button>
 
+					<ion-option-button  ng-click="setFollowing(company)">
+						<i ng-class="{'icon--positive' : !company.following, 'icon--assertive' : !!company.following }" class="icon ion-person-add "></i>
+					</ion-option-button>
+
 					<ion-option-button class="button-calm" ui-sref="app.notes({uid : company.uid})" ng-click="share()">
 						<i class="icon ion-compose"></i>
 					</ion-option-button>
