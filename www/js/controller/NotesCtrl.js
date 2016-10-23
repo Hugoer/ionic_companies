@@ -1,5 +1,5 @@
-app
-.controller('NotesCtrl', function($scope, $ionicLoading, $state, $timeout, CompanyService ) {
+var notesCtrlFn= ['$scope', '$ionicLoading', '$state', '$timeout', 'CompanyService',
+function($scope, $ionicLoading, $state, $timeout, CompanyService ) {
 
 	$scope.company = {};
 	$scope.company.uid = $state.params.uid;
@@ -65,4 +65,6 @@ app
 		initialize();   			
 	});
 
-});
+}];
+
+app.controller('NotesCtrl', notesCtrlFn);

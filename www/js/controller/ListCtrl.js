@@ -1,5 +1,5 @@
-app
-.controller('ListCtrl', function($scope, $ionicLoading, $state, CompanyService, $timeout, $filter, $localStorage) {
+var listCtrlFn = ['$scope', '$ionicLoading', '$state', 'CompanyService', '$timeout', '$filter', '$localStorage',
+function($scope, $ionicLoading, $state, CompanyService, $timeout, $filter, $localStorage) {
 	
 	$scope.paginationItems = 30;
 
@@ -46,7 +46,6 @@ app
 
 	$scope.loadMore = function(){
 		console.log('loadmore!!!');
-		$scope.lastElement = $scope.lastElement + $scope.paginationItems;
 		$scope.refresh();
 	};
 
@@ -67,10 +66,9 @@ app
 	};
 
 	var saveData = function(companyList){
-
 		// var compTmp = [];
 		var minValue = ($scope.lastElement - $scope.paginationItems),
-			maxValue = $scope.lastElement
+			maxValue = $scope.lastElement;
 		
 		console.log(minValue,maxValue);
 
@@ -84,10 +82,10 @@ app
 					tmpValue = item.val();
 					tmpValue.uid = item.key;
 					tmpValue.showName = tmpValue.name + (!!tmpValue.following ? ' (*)' : '');
-					tmp.push(tmpValue);					
+					tmp.push(tmpValue);
 					break;
 				case 'prospects':
-					if (!!item.val().web){
+					if (!item.val().web){
 						tmpValue = item.val();
 						tmpValue.uid = item.key;
 						tmpValue.showName = tmpValue.name + (!!tmpValue.following ? ' (*)' : '');
@@ -107,30 +105,10 @@ app
 		});
 
 		tmp = $filter('orderBy')(tmp, 'distance');
-
-		// for (var i = minValue; i < maxValue; i++) {
-		// 	var comp = {};
-		// 	comp = companyList.val()[Object.keys(companyList.val())[i]];
-		// 	comp.uid = Object.keys(companyList.val())[i];
-		// 	comp.showName = comp.name + (!!comp.following ? ' (*)' : '');
-		// 	// compTmp.push(comp);
-		// 	$localStorage.companies[$state.params.type].push(comp);
-		// 	$localStorage.lastItemLoaded = $localStorage.lastItemLoaded + 1;
-		// }
-		
-
-
-		// companyList.forEach(function(snapshot) {
-		//     // console.log(snapshot.val().name + ' - ' + snapshot.val().distance);
-		// 	var comp = {};
-		// 	comp = snapshot.val();
-		// 	comp.uid = snapshot.key;
-		// 	comp.showName = comp.name + (!!comp.following ? ' (*)' : '');
-		// 	compTmp.push(comp);
-		// 	$localStorage.companies[$state.params.type].push(comp);
-		// 	$localStorage.lastItemLoaded = $localStorage.lastItemLoaded + 1;
-		// });
-
+		tmp = $filter('limitTo')(tmp, maxValue, minValue);
+		$localStorage.companies[$state.params.type] = tmp;
+		$localStorage.lastItemLoaded[$state.params.type] = maxValue;
+		$scope.lastItemLoaded = maxValue;
 		$timeout(function(){
 			// $scope.companies = $filter('orderBy')($localStorage.companies[$state.params.type], 'distance');
 			$scope.companies = tmp;
@@ -143,7 +121,7 @@ app
 	$scope.delete = function(){
 		$scope.companies = [];
 		$localStorage.companies[$state.params.type] = [];
-		$localStorage.lastItemLoaded = 0;
+		$localStorage.lastItemLoaded[$state.params.type][$state.params.type] = 0;
 		$scope.lastItemLoaded = 0;
 		$scope.firstElem = 0;
 		$scope.lastElement = 0;
@@ -154,20 +132,20 @@ app
 		var title = '';
 		switch($state.params.type){
 			case ('all'):
-				$scope.companyText = 'Todas ( ' + $scope.lastElement + ' )';
+				$scope.companyText = 'Todas ( ' + $scope.lastItemLoaded + ' )';
 				break;
 			case ('following'):
-				$scope.companyText = 'Siguiendo ( ' + $scope.lastElement + ' )';
+				$scope.companyText = 'Siguiendo ( ' + $scope.lastItemLoaded + ' )';
 				break;
 			case ('prospects'):
-				$scope.companyText = 'Sin web ( ' + $scope.lastElement + ' )';
+				$scope.companyText = 'Sin web ( ' + $scope.lastItemLoaded + ' )';
 				break;
 		}
-	}
+		$scope.lastElement = $scope.lastElement + $scope.paginationItems;
+	};
 
 	$scope.refresh = function(){
-
-		$localStorage.lastItemLoaded = 0;
+		$localStorage.lastItemLoaded[$state.params.type] = 0;
 		$scope.lastItemLoaded = 0;
 		
 		$scope.isSearchResult = false;
@@ -177,71 +155,62 @@ app
 
 		var onlyFollowing = (!!$state.params.following),
 			companyRef = {};
-
-		// $localStorage.companies[$state.params.type] = [];
+		
 		$scope.companies = [];
 
-		// switch ($state.params.type){
-		// 	case ('all'):
-				companyRef = firebase.database().ref('dev/kompassList').orderByChild('distance')
-					.limitToFirst($scope.lastElement)
-					.once('value', function(data) {
+		switch ($state.params.type){
+			case 'all':
+				companyRef = firebase.database().ref('dev/kompassList').orderByChild('distance').limitToFirst($scope.lastElement);
+				break;
+			case 'prospects':
+				companyRef = firebase.database().ref('dev').child('kompassList').orderByChild('web').equalTo(null);
+				break;
+			case 'following':
+				companyRef = firebase.database().ref('dev').child('kompassList').orderByChild('following').equalTo(true);
+				break;
+		}
 
-						saveData(data);
-						$ionicLoading.hide();
+		companyRef.once('value', function(data) {
 
-				}, function (error) {
-					$ionicLoading.hide();
-					$scope.companies = [];
-					console.log('Error: ' + error.code);
-					alert(JSON.stringify(error));
-				});			
-		// 		break;			
-		// 	case ('following'):
-		// 	case ('prospects'):
-				
-		// 		if ( $state.params.type === 'prospects'){
-		// 			companyRef = firebase.database().ref('dev').child('kompassList').orderByChild('web').equalTo(null)
-		// 				.limitToFirst($scope.lastElement);
-		// 		}else{
-		// 			companyRef = firebase.database().ref('dev').child('kompassList').orderByChild('following').equalTo(true)
-		// 				.limitToFirst($scope.lastElement);
-		// 		}
+				saveData(data);
+				$ionicLoading.hide();
 
-		// 		companyRef.once('value', function(data) {
+		}, function (error) {
+			$ionicLoading.hide();
+			$scope.companies = [];
+			console.log('Error: ' + error.code);
+			alert(JSON.stringify(error));
+		});
 
-		// 			saveData(data);
-		// 			$ionicLoading.hide();
-
-		// 		}, function (error) {
-		// 			$ionicLoading.hide();
-		// 			$scope.companies = [];
-		// 		   console.log('Error: ' + error.code);
-		// 		   alert(JSON.stringify(error));
-		// 		});
-		// 		break;
-		// }
 	};
 
     $scope.$on( "$ionicView.beforeEnter", function( scopes, states ) {
+    	
     	if ( !$localStorage.companies) $localStorage.companies = {};
     	if ( !$localStorage.lastItemLoaded) $localStorage.lastItemLoaded = {};
-    	if ( !$localStorage.companies[$state.params.type]) $localStorage.companies[$state.params.type] = [];
+
+    	if ( !!$localStorage.companies && !$localStorage.companies[$state.params.type]) $localStorage.companies[$state.params.type] = [];
+
+    	if ( !!$localStorage.lastItemLoaded && !$localStorage.lastItemLoaded[$state.params.type]) $localStorage.lastItemLoaded[$state.params.type] = 0;
 
     	if ( !$scope.companies || $scope.companies.length === 0){
-    		$scope.companies = $filter('orderBy')($localStorage.companies[$state.params.type], 'distance') || [];
-			$scope.lastItemLoaded  = $localStorage.lastItemLoaded[$state.params.type] || 0;
+
+    		if ( !!$localStorage.companies && !!$localStorage.companies[$state.params.type] && $localStorage.companies[$state.params.type].length !== 0 ){
+    			$scope.companies = $filter('orderBy')($localStorage.companies[$state.params.type], 'distance') || [];	
+    		}
+    		
+    		if ( !!$localStorage.lastItemLoaded ){
+    			$scope.lastItemLoaded  = $localStorage.lastItemLoaded[$state.params.type] || 0;
+    		}else{
+    			$scope.lastItemLoaded  = 0;
+    		}
 			$scope.firstElem = $scope.lastItemLoaded;
-			$scope.lastElement = $scope.lastItemLoaded + $scope.paginationItems;
+			$scope.lastElement = 0;
 			_updateTitle();
     	}
 
     });
-    
-    /*$scope.$on( "$ionicView.beforeLeave", function( scopes, states ) {
-		$localStorage.lastItemLoaded = $scope.lastItemLoaded;
-		$localStorage.maxItems = $scope.maxItems;
-    });*/
+   
+}];
 
-
-});
+app.controller('ListCtrl', listCtrlFn);

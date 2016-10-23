@@ -1,5 +1,5 @@
-app
-.controller('CompanyCtrl', function($scope, $state, $ionicLoading, MapService, $timeout, CompanyService) {
+var companyCtrlFn = ['$scope', '$state', '$ionicLoading', 'MapService', '$timeout', 'CompanyService',
+function($scope, $state, $ionicLoading, MapService, $timeout, CompanyService) {
 
 	$scope.openInExternalBrowser = function(url){
 	  // Open in external browser
@@ -92,4 +92,5 @@ app
 			MapService.createMarker(position, $scope.map, name, $scope );
 		},0);
 	}
-});
+}];
+app.controller('CompanyCtrl', companyCtrlFn);

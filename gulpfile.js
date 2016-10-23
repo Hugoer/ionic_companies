@@ -11,7 +11,8 @@ var rename = require('gulp-rename');
 var sh = require('shelljs');
 
 var notify       = require('gulp-notify'),
-  plumber      = require('gulp-plumber');
+  plumber      = require('gulp-plumber'),
+  strip = require('gulp-strip-comments');
 
 var paths = {
   sass: ['./scss/**/*.scss']
@@ -31,6 +32,7 @@ var onError = function (err) {
 
     this.emit('end');
 };
+
 
 gulp.task('sass', function(done) {
   gulp.src('./www/scss/main.scss')
@@ -63,7 +65,11 @@ gulp.task('js', function(){
 
     gulp.src(jsPrimary)
     .pipe(concat('default.js'))
+    .pipe(strip())
     .pipe(gulp.dest('./www/lib'));
+    // .pipe(uglify())
+    // .pipe(concat('default.min.js'))
+    // .pipe(gulp.dest('./www/lib'));
 
 });
 

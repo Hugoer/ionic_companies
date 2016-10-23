@@ -2,10 +2,9 @@
   "name": "EmpresasVigoAPK",
   "app_id": "",
   "gulpStartupTasks": [
-    "dev",
-    "watch"
+    "default"
   ],
   "watchPatterns": [
-    "www/**/*"
+    "www/lib/*"
   ]
 }

@@ -1,5 +1,5 @@
-app
-.controller('MapCtrl', function($scope, $ionicLoading, $state, MapService, $timeout, $localStorage) {
+var mapCtrlFn = ['$scope', '$ionicLoading', '$state', 'MapService', '$timeout', '$localStorage',
+function($scope, $ionicLoading, $state, MapService, $timeout, $localStorage) {
 
 	$scope.position = {
 		'lat' : 42.2380134,
@@ -121,4 +121,7 @@ app
 		$scope.changeFilters(true);
 	});
 
-});
+}];
+
+
+app.controller('MapCtrl', mapCtrlFn);
