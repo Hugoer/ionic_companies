@@ -113,7 +113,7 @@ function($scope, $ionicLoading, $state, MapService, $timeout, $localStorage) {
 	};
 
     $scope.$on( "$ionicView.beforeEnter", function( scopes, states ) {
-		$scope.refreshData();
+		// $scope.refreshData();
     });
 
 	$scope.$on( "$ionicView.enter", function( scopes, states ) {

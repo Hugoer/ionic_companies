@@ -25,33 +25,61 @@ var mapsServiceFn = ['$ionicLoading','$compile', '$templateRequest',
             });
         };
 
-        var createMarker = function(position, myMap, title, scope){
+        var createMarker = function(position, myMap, title, scope, companyUid, callback){
+            
+            callback = callback || angular.noop;
+
             var myLatlng = new google.maps.LatLng(position.lat,position.lng);
-            marker = new google.maps.Marker({
+            var marker = new google.maps.Marker({
                 position : myLatlng,
                 map      : myMap,
                 title    : title
             });
-            return marker;
-            // $templateRequest("templates/templatemaps.html")
-            //     .then(function(html){
-            //         var template = angular.element(html);
-            //         // element.append(template);
-            //         var compiled = $compile(template)(scope);
-            //         var infowindow = new google.maps.InfoWindow({
-            //             content: compiled[0]
-            //         });
+            // return marker;
+            $templateRequest("templates/templatemaps.html")
+                .then(function(html){
+                    if ( !!scope.markerList && scope.markerList.length !== 0 ){
+                        for (var company in scope.markerList) {
+                            if (scope.markerList[company].key === companyUid){
+                                scope.company = company;
+                            }
+                        }                        
+                    }
+                    var template = angular.element(html);
+                    // element.append(template);
+                    var compiled = $compile(template)(scope);
+                    var infowindow = new google.maps.InfoWindow({
+                        content: compiled[0]
+                    });
 
-            //         google.maps.event.addListener(marker, 'click', function() {
-            //             infowindow.open(myMap,marker);
-            //         });
-                    
-            //         return marker;
+                    google.maps.event.addListener(marker, 'click', function() {
+                        infowindow.open(myMap,marker);
+                    });
+                    callback(marker);
+                    // return marker;
 
-            //     }).catch(function(err){
-            //         console.log(err);
-            //         return marker;
-            //     });
+                }).catch(function(err){
+                    console.log(err);
+                    return marker;
+                });
+        };
+
+        var createArrayMarker = function(array, myMap, scope){
+            var objPosition = {},
+                arrReturn = [];
+            for (var i = 0; i < array.length; i++) {
+                if ( !!array[i].value.position ){
+                    objPosition = {
+                        'lat' : array[i].value.position.latitud,
+                        'lng' : array[i].value.position.longitud
+                    };
+                    //Esta función tiene que ser una promise que sólo se dispae cuando hemos credo y obtenido todos los markers.
+                    createMarker(objPosition, myMap, array[i].value.name + ' (' +  array[i].value.description + ')', scope, array[i].key), function(markeerResponse){
+                        arrReturn.push(markeerResponse);
+                    };
+                }
+            }
+            return arrReturn;
         };
 
         var createCircle = function(position, myMap, radius){
@@ -75,20 +103,6 @@ var mapsServiceFn = ['$ionicLoading','$compile', '$templateRequest',
             }
         };
 
-        var createArrayMarker = function(array, myMap, scope){
-            var objPosition = {},
-                arrReturn = [];
-            for (var i = 0; i < array.length; i++) {
-                if ( !!array[i].value.position ){
-                    objPosition = {
-                        'lat' : array[i].value.position.latitud,
-                        'lng' : array[i].value.position.longitud
-                    };
-                    arrReturn.push( createMarker(objPosition, myMap, array[i].value.name + ' (' +  array[i].value.description + ')', scope) );
-                }
-            }
-            return arrReturn;
-        };
 
         var openGeo = function(address){
             var _url = 'geo://0,0?q=' + address;

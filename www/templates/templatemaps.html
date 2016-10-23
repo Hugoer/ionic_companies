@@ -1,5 +1,6 @@
-<div>
-	<h2>Nombre de la empresa: </h2>
-	<h2>Dirección:</h2>
+<div ng-controller="TemplateMapsCtrl">
+	<h2>Nombre: </h2> {{company.name}}
+	<h2>Dirección:</h2> {{company.streetAddress}}
+	<br>
 	<a href="" ng-click="openGeo()">Abrir en Google Maps</a>
 </div>
