@@ -1,8 +1,41 @@
 {
-  "name": "HelloIonic",
+  "name": "helloionic",
   "private": "true",
   "dependencies": {
-  	"ionic": "driftyco/ionic-bower#1.3.1",
-    "angularfire": "^2.0.2"
+    "ionic": "driftyco/ionic-bower#1.3.1",
+    "angularfire": "^2.0.2",
+    "firebase": "3.4.1",
+    "ngstorage": "^0.3.11"
+  },
+  "install": {
+    "path": {
+      "js": "www/js/vendor",
+      "scss": "www/scss/vendor/",
+      "css": "www/css/vendor",
+      "png": "www/lib/img",
+      "gif": "www/lib/img",
+      "eot": "www/lib/fonts",
+      "otf": "www/lib/fonts",
+      "svg": "www/lib/fonts",
+      "ttf": "www/lib/fonts",
+      "woff": "www/lib/fonts",
+      "woff2": "www/lib/fonts"
+    },
+    "sources": {
+      "ionic": [
+        "bower_components/ionic/js/ionic.bundle.js",
+        "bower_components/ionic/scss/**",
+        "bower_components/ionic/fonts/**"
+      ],
+      "angularfire": [
+        "bower_components/angularfire/dist/angularfire.js"
+      ],
+      "firebase": [
+        "bower_components/firebase/firebase.js"
+      ],
+      "ngstorage" : [
+      	"bower_components/ngstorage/ngStorage.js"
+      ]
+    }
   }
 }

@@ -19,6 +19,7 @@ var app = angular.module('starter', [
         storageBucket     : 'empresasvigo-90094.appspot.com',
         messagingSenderId : '783868608028'
     };
+    
     firebase.initializeApp(config);
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options){

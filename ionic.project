@@ -1,0 +1,11 @@
+{
+  "name": "EmpresasVigoAPK",
+  "app_id": "",
+  "gulpStartupTasks": [
+    "dev",
+    "watch"
+  ],
+  "watchPatterns": [
+    "www/**/*"
+  ]
+}
