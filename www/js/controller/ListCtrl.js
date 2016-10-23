@@ -44,11 +44,6 @@ function($scope, $ionicLoading, $state, CompanyService, $timeout, $filter, $loca
 
 	};
 
-	$scope.loadMore = function(){
-		console.log('loadmore!!!');
-		$scope.refresh();
-	};
-
 	$scope.setFollowing = function(item){
 		CompanyService.setFollowing(item.uid, !item.following, function(){
 			console.log('Cambiado');
@@ -105,13 +100,20 @@ function($scope, $ionicLoading, $state, CompanyService, $timeout, $filter, $loca
 		});
 
 		tmp = $filter('orderBy')(tmp, 'distance');
-		tmp = $filter('limitTo')(tmp, maxValue, minValue);
+		tmp = $filter('limitTo')(tmp, maxValue, 0);
+		// tmp = $filter('limitTo')(tmp, maxValue, minValue);
+		
+		// .push();
+		// angular.extend($localStorage.companies[$state.params.type], tmp);
 		$localStorage.companies[$state.params.type] = tmp;
 		$localStorage.lastItemLoaded[$state.params.type] = maxValue;
+
 		$scope.lastItemLoaded = maxValue;
+
 		$timeout(function(){
 			// $scope.companies = $filter('orderBy')($localStorage.companies[$state.params.type], 'distance');
-			$scope.companies = tmp;
+			// $scope.companies.push(tmp);
+			angular.extend($scope.companies, tmp);
 			$scope.firstLoadDone = true;
 			_updateTitle();
 		},0);
@@ -156,7 +158,7 @@ function($scope, $ionicLoading, $state, CompanyService, $timeout, $filter, $loca
 		var onlyFollowing = (!!$state.params.following),
 			companyRef = {};
 		
-		$scope.companies = [];
+		// $scope.companies = [];
 
 		switch ($state.params.type){
 			case 'all':
