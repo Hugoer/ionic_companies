@@ -90,3 +90,12 @@
   color: #444444;
 }
 /*ICONS*/
+
+
+.notes__content{
+  display: flex;
+  flex: 1;
+}
+.notes__footer{
+  margin-bottom: 15px;
+}
